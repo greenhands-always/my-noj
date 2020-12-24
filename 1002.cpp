@@ -1,56 +1,55 @@
-#include<iostream>
-#include<algorithm>
-#include<vector>
-
+#include <iostream>
+#include <vector>
 using namespace std;
-
-void swap(int& a, int& b)
+void merge(vector<int>& arr, int L, int mid, int R)
 {
-	int temp = a;
-	a = b;
-	b = temp;
-}
-
-void quicksort(vector<int> &a, int s, int e)
-{
-	// s 是数组的开始，e是数组的最后一个元素，k要求的前k个最大值
-	int m = a[s];
-	if (s >= e)
-		return;
-	int i = s, j = e;
-	while (i != j)
+	int* help = new int[R - L + 1];
+	int p1 = L, p2 = mid + 1, i = 0;
+	while (p1 <= mid && p2 <= R)
 	{
-		while (j > i && a[j] >= m)
-		{
-			j--;
-		}
-		swap(a[i], a[j]);
-		while (j > i && a[i] <= m)
-		{
-			i++;
-		}
-		swap(a[i], a[j]);
+		help[i++] = arr[p1] > arr[p2] ? arr[p2++] : arr[p1++];
 	}
-	quicksort(a, s, i - 1);
-	quicksort(a, i + 1, e);
+	while (p1 <= mid)
+		help[i++] = arr[p1++];
+	while (p2 <= R)
+		help[i++] = arr[p2++];
 
+	for (i = 0; i < R - L + 1; i++)
+	{
+		arr[L + i] = help[i];
+	}
 }
+void sortprocess(vector<int>& arr, int L, int R)
+{
+	if (L < R)
+	{
+		int mid = L + ((R - L) >> 2);  //  (L+R)/2
+		sortprocess(arr, L, mid);
+		sortprocess(arr, mid + 1, R);
+		merge(arr, L, mid, R);
+	}
+}
+void MergeSort(vector<int>& arr, int L, int R)
+{
+	if (arr.size() < 2)
+		return;
+	sortprocess(arr, L, R);
+}
+
 
 int main()
 {
-	int n,i=0,temp;
-	vector<int> a;
-	cin >> n;
-	
-	char c;
+	vector<int> arr;
+	int n, temp,i=0;
+	cin >> n;  //输入n个数
 	for (i = 0; i < n; i++)
 	{
-		cin >> temp;
-		a.push_back(temp);
+		cin >> temp;  //输入数据
+		arr.push_back(temp);
 	}
-	
-	quicksort(a, 0, n - 1);
-	for (i = 0; i < n; i++)
-		cout << a[i] << endl;
+	MergeSort(arr, 0, arr.size() - 1);
+
+	for (i = 0; i < arr.size(); i++)
+		cout << arr[i] << endl;
 	return 0;
 }
